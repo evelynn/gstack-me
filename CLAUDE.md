@@ -319,12 +319,20 @@ gstack-me adds PDCA methodology, specialized agents, and a development pipeline 
 
 ### Agents
 Agent definitions in `agents/` extend the existing `agents/openai.yaml`:
-- `gap-detector` (opus) — Read-only design-implementation comparison
-- `code-analyzer` (opus) — Read-only code quality scoring
-- `pdca-iterator` (sonnet) — Auto-fix gaps to match design (max 5 iterations)
-- `report-generator` (haiku) — PDCA completion reports
-- `cto-lead` (opus) — Team orchestration & phase decisions
-- Plus: product-manager, frontend-architect, security-architect, enterprise-expert, infra-architect, design-validator, qa-strategist, pm-lead, starter-guide
+- `gap-detector` (opus) — Read-only design-implementation comparison, Match Rate 산출
+- `code-analyzer` (opus) — 6차원 코드 품질 스코어링
+- `pdca-iterator` (sonnet) — 설계 갭 자동 수정 (최대 5회 반복)
+- `report-generator` (haiku) — PDCA 완료 보고서 생성
+- `cto-lead` (opus) — 팀 오케스트레이션, 단계 진행 결정
+- `product-manager` (sonnet) — 요구사항 분석, MoSCoW 우선순위, Plan 문서
+- `frontend-architect` (sonnet) — UI 아키텍처, 컴포넌트 설계, 반응형 전략
+- `security-architect` (opus) — 보안 리뷰, OWASP 컴플라이언스
+- `enterprise-expert` (opus) — 마이크로서비스, DDD, 인프라 아키텍처
+- `infra-architect` (sonnet) — AWS/K8s/Terraform, CI/CD 파이프라인
+- `design-validator` (sonnet) — 설계 문서 완전성/일관성 검증
+- `qa-strategist` (sonnet) — 테스트 전략 수립, 품질 메트릭
+- `pm-lead` (opus) — PM Discovery 파이프라인 오케스트레이션
+- `starter-guide` (haiku) — 초보자 가이드
 
 ### Integrated Skills
 Existing gstack skills have `## Integrated:` sections appended:
