@@ -1147,3 +1147,82 @@ When the project has Docker or server logs available:
 | Starter (static) | Full | Skip | Browser only |
 | Dynamic (fullstack) | Full | Full | Both + cross-reference |
 | Enterprise (microservices) | Full | Full + distributed tracing | Both + service mesh |
+
+## Integrated: Fix-Verify Loop + Flow Testing (from flow-verifier)
+
+### 문제: 왜 QA가 버그를 못 잡는가
+기존 QA는 스크린샷으로 "보이는 것"만 검사한다. 다음 버그는 보이지 않는다:
+- 버튼 클릭해도 아무 일 안 일어남 (onClick 누락/에러)
+- 폼 제출 후 결과가 표시 안 됨 (state 미연결)
+- 페이지 이동 후 데이터가 안 뜸 (fetch 미실행)
+- 콘솔에 JS 에러가 쌓이는데 화면은 정상 (silent failure)
+
+### 수정-재검증 필수 루프
+QA에서 버그를 수정할 때 반드시:
+
+```
+1. 코드 수정
+2. 2초 대기 (hot-reload)
+3. $B goto {해당 페이지}
+4. $B console --errors          ← 새 에러 없는지 확인
+5. $B network --failed          ← API 실패 없는지 확인
+6. 수정한 동작을 직접 재실행 ($B click, $B fill 등)
+7. 기대 결과와 실제 결과 비교
+8. 일치하면 PASS, 불일치하면 다른 수정 시도
+```
+
+수정 후 "fixed" 처리하지 말 것. 반드시 브라우저에서 재검증.
+
+### 인터랙션 플로우 테스트 (Phase 8 이후 추가)
+시각 QA 완료 후, 핵심 유저 플로우를 실제로 실행:
+
+1. 컴포넌트 코드에서 onClick/onSubmit/onChange 핸들러 추출
+2. 각 핸들러의 효과 추적: 클릭 → API 호출 → 상태 변경 → UI 업데이트
+3. 브라우저에서 실제 실행:
+   ```bash
+   $B goto {page}
+   $B click {button_ref}
+   $B wait 1000
+   $B url                      # 페이지 이동 확인
+   $B text {result_element}    # 결과 텍스트 확인
+   $B console --errors         # 에러 없음 확인
+   ```
+4. 실패한 플로우 → 근본 원인 진단 → 수정 → 재실행
+
+### 런타임 디버깅 (2회 이상 수정 실패 시)
+같은 버그에 대해 2회 수정이 실패하면 runtime-debugger 전략 사용:
+
+1. React 상태 주입 검사:
+   ```bash
+   $B js "(() => {
+     const el = document.querySelector('{selector}');
+     const key = Object.keys(el).find(k => k.startsWith('__reactFiber'));
+     console.log('FIBER_STATE:', JSON.stringify(el[key]?.memoizedState));
+   })()"
+   $B console --pattern "FIBER_STATE"
+   ```
+
+2. 데이터 흐름 추적: API 응답 → Store → Component → DOM
+   ```bash
+   $B network --url "{api_path}" --response    # API 데이터 확인
+   $B js "console.log('STORE:', JSON.stringify({store}.getState()))"
+   $B text {dom_element}                        # DOM에 표시된 값
+   ```
+   데이터가 어디서 끊기는지 찾으면 그것이 근본 원인.
+
+3. 이벤트 핸들러 바인딩 확인:
+   ```bash
+   $B js "(() => {
+     const btn = document.querySelector('{selector}');
+     const hasClick = btn?.onclick || btn?.getAttribute('onclick');
+     console.log('HAS_HANDLER:', !!hasClick, btn?.disabled);
+   })()"
+   ```
+
+### 콘솔/네트워크 감시 (모든 QA 단계에서)
+모든 QA 검사 단계에서 다음을 병행:
+```bash
+$B console --errors     # JS 에러 0이어야 함
+$B network --failed     # 실패한 API 0이어야 함
+```
+시각적으로 정상이어도 콘솔 에러가 있으면 → 해당 에러를 반드시 수정.

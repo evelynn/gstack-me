@@ -330,6 +330,8 @@ Agent definitions in `agents/` extend the existing `agents/openai.yaml`:
 - `infra-architect` (sonnet) — AWS/K8s/Terraform, CI/CD 파이프라인
 - `design-validator` (sonnet) — 설계 문서 완전성/일관성 검증
 - `qa-strategist` (sonnet) — 테스트 전략 수립, 품질 메트릭
+- `flow-verifier` (opus) — 인터랙션 플로우 검증 (클릭→결과 실제 확인)
+- `runtime-debugger` (opus) — 런타임 상태 진단 (React state, 데이터 흐름 추적)
 - `pm-lead` (opus) — PM Discovery 파이프라인 오케스트레이션
 
 ### Integrated Skills

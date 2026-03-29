@@ -81,12 +81,15 @@ PASS: 헬스 >= 95, Critical/High = 0, Match Rate >= 90%
 ```
 
 ### 루프
-1. `/qa` Exhaustive tier (브라우저 QA + 로그 QA)
-2. `/pdca analyze {feature}` (설계 문서 있으면 gap-detector 실행)
-3. 통과 조건 확인
-4. 미통과 → `/qa` 자동 수정 + `/pdca iterate {feature}` 갭 수정
-5. 반복 (최대 5회)
-6. 5회 초과 → AskUserQuestion: ["계속", "수동 수정", "중단"]
+1. `/qa` Exhaustive tier (브라우저 QA + 로그 QA + 콘솔/네트워크 감시)
+2. 각 수정마다 **브라우저 재검증**: 수정 → 2초 대기 → `$B goto` → `$B console --errors` → 동작 재실행 → 결과 확인
+3. 시각 QA 통과 후 **인터랙션 플로우 테스트**: 핵심 유저 플로우를 실제 클릭/입력으로 실행
+4. `/pdca analyze {feature}` (설계 문서 있으면 gap-detector 실행)
+5. 통과 조건: 헬스 >= 95, Critical/High = 0, Match Rate >= 90%, 콘솔 에러 = 0, 플로우 FAIL = 0
+6. 미통과 → 수정 + 재검증. 같은 버그 2회 실패 → **runtime-debugger** 전략 (상태 주입 검사, 데이터 흐름 추적)
+7. `/pdca iterate {feature}` 갭 수정
+8. 반복 (최대 5회)
+9. 5회 초과 → AskUserQuestion: ["계속", "수동 수정", "중단"]
 
 ---
 

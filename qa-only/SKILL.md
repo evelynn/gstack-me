@@ -738,3 +738,29 @@ When the project has Docker or server logs available:
 | Starter (static) | Full | Skip | Browser only |
 | Dynamic (fullstack) | Full | Full | Both + cross-reference |
 | Enterprise (microservices) | Full | Full + distributed tracing | Both + service mesh |
+
+## Integrated: Fix-Verify Loop + Flow Testing (from flow-verifier)
+
+### 인터랙션 플로우 테스트 (리포트 전용)
+시각 QA 완료 후, 핵심 유저 플로우를 실제로 실행하고 결과를 리포트:
+
+1. 컴포넌트 코드에서 onClick/onSubmit/onChange 핸들러 추출
+2. 브라우저에서 실제 실행하여 동작 확인:
+   ```bash
+   $B goto {page}
+   $B click {button_ref}
+   $B wait 1000
+   $B url                      # 페이지 이동 확인
+   $B text {result_element}    # 결과 텍스트 확인
+   $B console --errors         # 에러 확인
+   $B network --failed         # API 실패 확인
+   ```
+3. 결과를 리포트에 포함:
+   | Flow | Steps | Result | Console Errors | API Failures |
+   |------|:-----:|:------:|:-:|:-:|
+   | Login | 5 | PASS | 0 | 0 |
+   | Create Item | 7 | FAIL (step 4) | 1 | 1 |
+
+### 콘솔/네트워크 감시
+모든 QA 페이지에서 `$B console --errors` + `$B network --failed` 병행.
+시각적 정상이어도 에러가 있으면 리포트에 기록.

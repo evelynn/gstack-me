@@ -3,7 +3,7 @@
 **gstack + PDCA = 완전 자동화된 AI 개발 팩토리**
 
 gstack의 28개 엔지니어링 스킬(브라우저 QA, 코드 리뷰, 보안 감사, 배포 자동화)과
-PDCA 방법론(설계 기반 개발, 갭 분석, 자동 반복 개선, 12개 AI 에이전트)을 융합한 통합 개발 시스템.
+PDCA 방법론(설계 기반 개발, 갭 분석, 자동 반복 개선, 14개 AI 에이전트)을 융합한 통합 개발 시스템.
 
 > 원본 [gstack](https://github.com/garrytan/gstack) by Garry Tan (YC President)의 포크.
 > bkit vibecoding framework의 PDCA 방법론, 에이전트 시스템, 개발 파이프라인을 통합.
@@ -15,7 +15,7 @@ PDCA 방법론(설계 기반 개발, 갭 분석, 자동 반복 개선, 12개 AI 
 | | gstack (원본) | gstack-me (통합) |
 |---|---|---|
 | **스킬 수** | 28개 | 31개 (+3 신규) |
-| **에이전트** | 없음 | 12개 AI 에이전트 |
+| **에이전트** | 없음 | 14개 AI 에이전트 |
 | **개발 방법론** | 스프린트 기반 | PDCA 사이클 (설계 &rarr; 구현 &rarr; 검증 &rarr; 개선) |
 | **품질 지표** | 헬스 스코어 | 헬스 + Match Rate + Quality Score |
 | **설계 문서** | 수동 | 자동 생성 + 구현 대비 검증 |
@@ -148,7 +148,7 @@ cd .claude/skills/gstack && ./setup
 
 ---
 
-## AI 에이전트 시스템 (12개)
+## AI 에이전트 시스템 (14개)
 
 PDCA 각 단계에서 자동 작동하는 전문 에이전트:
 
