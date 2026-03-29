@@ -2,7 +2,7 @@
 name: pipeline
 version: 1.0.0
 description: |
-  9-phase Development Pipeline guide. Step-by-step from schema to deployment.
+  9-phase Development Pipeline. Step-by-step from schema to deployment.
   Each phase runs an internal PDCA mini-cycle.
 user-invocable: true
 allowed-tools:
@@ -12,14 +12,12 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# Development Pipeline — 9-Phase Guide
+# Development Pipeline — 9-Phase
 
 ## Usage
 ```
-/pipeline start {level}    — Initialize pipeline
-/pipeline next             — Guide to next phase
-/pipeline status           — Show progress
-/pipeline phase {N}        — Jump to phase details
+/pipeline start {level}    — Initialize pipeline for project level
+/pipeline phase {N}        — Jump to specific phase details
 ```
 
 ## Phases
@@ -42,6 +40,3 @@ allowed-tools:
 - **Starter**: Phase 1 → 2 → 3 → 6 → 9
 - **Dynamic**: All 9 phases
 - **Enterprise**: PM Discovery + All 9 phases + security emphasis
-
-## Status Tracking
-In `.gstack/pdca-status.json` under `pipeline` key.

@@ -7,7 +7,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
-export type PdcaPhase = 'pm' | 'plan' | 'design' | 'do' | 'check' | 'act' | 'report' | 'done';
+export type PdcaPhase = 'plan' | 'design' | 'do' | 'check' | 'act' | 'report' | 'done';
 
 export interface PdcaFeature {
   phase: PdcaPhase;
@@ -20,10 +20,10 @@ export interface PdcaFeature {
 export interface PdcaStatus {
   version: string;
   features: Record<string, PdcaFeature>;
-  pipeline?: { level: 'Starter' | 'Dynamic' | 'Enterprise'; currentPhase: number; completedPhases: number[] };
+  pipeline?: { level: 'Starter' | 'Dynamic' | 'Enterprise'; currentPhase: number };
 }
 
-const PHASES: PdcaPhase[] = ['pm', 'plan', 'design', 'do', 'check', 'act', 'report', 'done'];
+const PHASES: PdcaPhase[] = ['plan', 'design', 'do', 'check', 'act', 'report', 'done'];
 const STATUS_FILE = '.gstack/pdca-status.json';
 
 export function loadStatus(root: string): PdcaStatus {
@@ -44,20 +44,6 @@ export function advancePhase(f: PdcaFeature): PdcaPhase {
 
 export function shouldAutoIterate(f: PdcaFeature): boolean {
   return f.phase === 'check' && f.matchRate !== undefined && f.matchRate < 90;
-}
-
-export function getNextAction(f: PdcaFeature): string {
-  const actions: Record<PdcaPhase, string> = {
-    pm: '/pdca plan {feature}',
-    plan: '/pdca design {feature}',
-    design: 'Start implementation',
-    do: '/pdca analyze {feature}',
-    check: f.matchRate && f.matchRate >= 90 ? '/pdca report {feature}' : '/pdca iterate {feature}',
-    act: '/pdca analyze {feature} (re-verify)',
-    report: 'Feature complete! /retro for retrospective',
-    done: 'Archived. Start next feature.',
-  };
-  return actions[f.phase] || '/pdca status';
 }
 
 export function detectLevel(root: string): 'Starter' | 'Dynamic' | 'Enterprise' {

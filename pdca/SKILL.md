@@ -3,8 +3,8 @@ name: pdca
 version: 1.0.0
 description: |
   Unified PDCA (Plan-Design-Do-Check-Act) cycle management.
-  Orchestrates document-driven development with automatic phase progression,
-  gap analysis, and iterative improvement loops.
+  Orchestrates document-driven development with gap analysis
+  and iterative improvement loops.
 user-invocable: true
 allowed-tools:
   - Read
@@ -19,9 +19,6 @@ allowed-tools:
 
 # PDCA — Plan-Design-Do-Check-Act Cycle Manager
 
-## Overview
-PDCA is a document-driven development methodology ensuring every feature goes through structured planning, design, implementation, verification, and improvement phases.
-
 ## Usage
 ```
 /pdca plan {feature}      — Create/update plan document
@@ -30,8 +27,6 @@ PDCA is a document-driven development methodology ensuring every feature goes th
 /pdca analyze {feature}   — Run gap analysis (design vs implementation)
 /pdca iterate {feature}   — Auto-fix gaps found in analysis
 /pdca report {feature}    — Generate completion report
-/pdca status              — Show current PDCA status
-/pdca next                — Suggest next action based on current phase
 ```
 
 ## PDCA Phases
@@ -60,6 +55,9 @@ Follow design exactly. Commit frequently. If design gaps found → update design
 ### Phase 4: Check (Gap Analysis)
 **Output:** `docs/03-analysis/{feature}.gap-analysis.md`
 Compare design vs implementation point-by-point. Calculate Match Rate.
+```
+Match Rate = (verified_items + partial*0.5) / total_designed_items * 100
+```
 **gstack:** Use `/qa`, `/browse`, `/benchmark`, `/cso`
 
 ### Phase 5: Act (Iteration)
@@ -76,9 +74,6 @@ Executive Summary, Value Delivered, Phase Summary, Quality Metrics, Lessons Lear
 | Static HTML/CSS | Starter | Plan → Do → Report |
 | Next.js + DB/API | Dynamic | Full PDCA cycle |
 | Microservices + K8s | Enterprise | Full + PM + Security |
-
-## State Management
-Tracked in `.gstack/pdca-status.json`
 
 ## Integration Map
 ```

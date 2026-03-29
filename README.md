@@ -3,7 +3,7 @@
 **gstack + PDCA = 완전 자동화된 AI 개발 팩토리**
 
 gstack의 28개 엔지니어링 스킬(브라우저 QA, 코드 리뷰, 보안 감사, 배포 자동화)과
-PDCA 방법론(설계 기반 개발, 갭 분석, 자동 반복 개선, 14개 AI 에이전트)을 융합한 통합 개발 시스템.
+PDCA 방법론(설계 기반 개발, 갭 분석, 자동 반복 개선, 12개 AI 에이전트)을 융합한 통합 개발 시스템.
 
 > 원본 [gstack](https://github.com/garrytan/gstack) by Garry Tan (YC President)의 포크.
 > bkit vibecoding framework의 PDCA 방법론, 에이전트 시스템, 개발 파이프라인을 통합.
@@ -15,7 +15,7 @@ PDCA 방법론(설계 기반 개발, 갭 분석, 자동 반복 개선, 14개 AI 
 | | gstack (원본) | gstack-me (통합) |
 |---|---|---|
 | **스킬 수** | 28개 | 31개 (+3 신규) |
-| **에이전트** | 없음 | 14개 AI 에이전트 |
+| **에이전트** | 없음 | 12개 AI 에이전트 |
 | **개발 방법론** | 스프린트 기반 | PDCA 사이클 (설계 &rarr; 구현 &rarr; 검증 &rarr; 개선) |
 | **품질 지표** | 헬스 스코어 | 헬스 + Match Rate + Quality Score |
 | **설계 문서** | 수동 | 자동 생성 + 구현 대비 검증 |
@@ -78,8 +78,8 @@ cd .claude/skills/gstack && ./setup
 
 | 스킬 | 역할 |
 |------|------|
-| `/pdca` | PDCA 사이클 통합 관리 (plan/design/do/analyze/iterate/report/status/next) |
-| `/pipeline` | 9단계 개발 파이프라인 가이드 (스키마 &rarr; 배포) |
+| `/pdca` | PDCA 사이클 통합 관리 (plan/design/do/analyze/iterate/report) |
+| `/pipeline` | 9단계 개발 파이프라인 (스키마 &rarr; 배포) |
 | `/pm-discovery` | PM 에이전트 팀 &mdash; 제품 발견, 시장 조사, PRD 생성 |
 | `/dev-all` | 원커맨드 전체 사이클 자동화 (기획 &rarr; 배포) |
 
@@ -148,7 +148,7 @@ cd .claude/skills/gstack && ./setup
 
 ---
 
-## AI 에이전트 시스템 (14개)
+## AI 에이전트 시스템 (12개)
 
 PDCA 각 단계에서 자동 작동하는 전문 에이전트:
 
@@ -157,7 +157,6 @@ PDCA 각 단계에서 자동 작동하는 전문 에이전트:
 | `gap-detector` | opus | Check | 설계 vs 코드 비교, Match Rate 산출 |
 | `code-analyzer` | opus | Check | 6차원 코드 품질 스코어링 |
 | `pdca-iterator` | sonnet | Act | 설계 갭 자동 수정 (최대 5회) |
-| `report-generator` | haiku | Report | 완료 보고서 생성 |
 | `cto-lead` | opus | 전체 | 팀 오케스트레이션, 단계 진행 결정 |
 | `product-manager` | sonnet | Plan | 요구사항 분석, Plan 문서 생성 |
 | `frontend-architect` | sonnet | Design/Do | UI 아키텍처, 컴포넌트 설계 |
@@ -167,7 +166,6 @@ PDCA 각 단계에서 자동 작동하는 전문 에이전트:
 | `design-validator` | sonnet | Design | 설계 문서 완전성 검증 |
 | `qa-strategist` | sonnet | Check | 테스트 전략 수립 |
 | `pm-lead` | opus | PM | PM Discovery 오케스트레이션 |
-| `starter-guide` | haiku | 전체 | 초보자 가이드 |
 
 ---
 
