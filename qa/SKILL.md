@@ -1105,3 +1105,45 @@ If the repo has a `TODOS.md`:
 13. **Only modify tests when generating regression tests in Phase 8e.5.** Never modify CI configuration. Never modify existing tests — only create new test files.
 14. **Revert on regression.** If a fix makes things worse, `git revert HEAD` immediately.
 15. **Self-regulate.** Follow the WTF-likelihood heuristic. When in doubt, stop and ask.
+
+## Integrated: Zero Script QA (from bkit qa-monitor)
+
+In addition to browser-based QA, apply structured log analysis for backend verification:
+
+### Structured Log QA Methodology
+When the project has Docker or server logs available:
+
+1. **Log Infrastructure Check**
+   - Verify structured JSON logging is configured
+   - Check log levels: ERROR, WARN, INFO, DEBUG
+   - Identify log output location (stdout, file, Docker logs)
+
+2. **Runtime Verification via Logs**
+   ```bash
+   # Docker projects
+   docker compose logs --tail=100 -f [service] 2>&1 | head -200
+
+   # Local dev server
+   tail -f server.log | grep -E '"level":"(error|warn)"'
+   ```
+
+3. **Log-Based Test Patterns**
+   | Pattern | What to Verify | Log Signal |
+   |---------|---------------|------------|
+   | API Health | All endpoints respond | `"status":200` for health check |
+   | Auth Flow | Login/logout works | `"event":"auth.login"` + `"event":"auth.logout"` |
+   | Data CRUD | Create/Read/Update/Delete | `"event":"db.query"` with operation types |
+   | Error Handling | Graceful failures | No unhandled exceptions in ERROR logs |
+   | Performance | Response times | `"duration_ms"` field values < threshold |
+
+4. **Combine with Browser QA**
+   - Run browser QA (standard gstack flow) while monitoring logs simultaneously
+   - Cross-reference: browser shows error → find corresponding log entry
+   - This catches issues invisible to browser-only testing (silent failures, race conditions)
+
+### Multi-Level QA Strategy
+| Project Level | Browser QA | Log QA | Combined |
+|--------------|-----------|--------|----------|
+| Starter (static) | Full | Skip | Browser only |
+| Dynamic (fullstack) | Full | Full | Both + cross-reference |
+| Enterprise (microservices) | Full | Full + distributed tracing | Both + service mesh |

@@ -904,3 +904,43 @@ a first pass to catch low-hanging fruit and improve your security posture betwee
 audits — not as your only line of defense.
 
 **Always include this disclaimer at the end of every /cso report output.**
+
+## Integrated: SEO + Security Architecture (from bkit)
+
+### SEO Security Audit (Phase 7 Integration)
+When auditing web applications, include SEO-security crossover checks:
+
+1. **Meta & Headers Security**
+   - CSP (Content-Security-Policy) header present and strict
+   - X-Frame-Options / X-Content-Type-Options / Referrer-Policy
+   - HSTS (Strict-Transport-Security) with includeSubDomains
+   - Verify meta robots tags don't expose internal paths
+
+2. **SEO-Specific Security**
+   - Sitemap.xml doesn't expose admin/internal URLs
+   - robots.txt doesn't reveal sensitive directory structure
+   - Canonical URLs prevent SEO poisoning
+   - Open Graph / structured data doesn't leak PII
+
+3. **Security Architecture Review**
+   | Layer | Checklist |
+   |-------|-----------|
+   | Authentication | JWT lifecycle, refresh token rotation, session fixation |
+   | Authorization | RBAC/ABAC consistency, privilege escalation paths |
+   | Data Protection | Encryption at rest/transit, PII handling, data retention |
+   | API Security | Rate limiting, input validation, CORS policy |
+   | Infrastructure | Secrets management, environment isolation, audit logging |
+
+### Multi-Level Security Strategy
+| Level | Focus | Depth |
+|-------|-------|-------|
+| Starter | OWASP Top 10 basics, HTTPS, XSS prevention | Surface scan |
+| Dynamic | + Auth/session security, API hardening, CSRF | Deep scan |
+| Enterprise | + Supply chain, infrastructure, compliance (SOC2/GDPR) | Full audit |
+
+### Agent-Assisted Security Scan
+For comprehensive audits, spawn security-architect subagent:
+```
+Agent(subagent_type="bkit:security-architect") with prompt:
+"Perform security architecture review focusing on: {high-risk areas identified}"
+```

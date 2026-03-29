@@ -1217,3 +1217,40 @@ If the repo has a `TODOS.md`:
 15. **Self-regulate.** Follow the design-fix risk heuristic. When in doubt, stop and ask.
 16. **CSS-first.** Prefer CSS/styling changes over structural component changes. CSS-only changes are safer and more reversible.
 17. **DESIGN.md export.** You MAY write a DESIGN.md file if the user accepts the offer from Phase 2.
+
+## Integrated: Design Spec Validation (from bkit design-validator)
+
+### Design Document Compliance Check
+In addition to visual QA, validate that the implementation matches design specifications:
+
+1. **Spec-to-Implementation Mapping**
+   If design documents exist in `docs/02-design/`:
+   - Compare designed components vs implemented components
+   - Check designed API endpoints vs actual routes
+   - Verify designed data models vs actual schema
+   - Match designed error handling vs actual error responses
+
+2. **Visual Compliance Scoring**
+   | Dimension | Weight | Measurement |
+   |-----------|--------|-------------|
+   | Layout Accuracy | 25% | Component positioning matches design |
+   | Color Compliance | 20% | Actual colors match design tokens |
+   | Typography | 15% | Font sizes, weights, line heights match |
+   | Spacing | 20% | Margins, paddings match design system |
+   | Responsive | 20% | Breakpoint behavior matches spec |
+
+3. **Match Rate Calculation**
+   ```
+   Visual Match Rate = (compliant_checks / total_checks) * 100
+   
+   >= 90% → Design implementation approved
+   70-89% → Minor fixes needed (list specific items)
+   < 70%  → Major redesign needed (escalate)
+   ```
+
+4. **Auto-Fix Workflow**
+   For issues with Match Rate < 90%:
+   - Generate specific CSS/component fix suggestions
+   - Apply fixes iteratively
+   - Re-check after each fix
+   - Max 5 iteration cycles

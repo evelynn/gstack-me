@@ -1018,3 +1018,53 @@ Suggest next step: `/ship` when ready to create the PR.
 - **Full depth means full depth.** Do not compress or skip sections from the loaded skill files (except the skip list in Phase 0). "Full depth" means: read the code the section asks you to read, produce the outputs the section requires, identify every issue, and decide each one. A one-sentence summary of a section is not "full depth" — it is a skip. If you catch yourself writing fewer than 3 sentences for any review section, you are likely compressing.
 - **Artifacts are deliverables.** Test plan artifact, failure modes registry, error/rescue table, ASCII diagrams — these must exist on disk or in the plan file when the review completes. If they don't exist, the review is incomplete.
 - **Sequential order.** CEO → Design → Eng. Each phase builds on the last.
+
+## Integrated: PDCA Planning + PM Agent Team (from bkit)
+
+### PDCA-Enhanced Planning
+The standard CEO/Design/Eng review pipeline is now enhanced with PDCA document-driven methodology:
+
+1. **Pre-Review: PM Discovery** (optional, for new products)
+   Before the 3-perspective review, run product discovery:
+   - Opportunity Solution Tree analysis
+   - Value Proposition (JTBD 6-Part framework)
+   - Lean Canvas business model
+   - User Personas + Competitor Analysis
+   - Market Sizing (TAM/SAM/SOM)
+   
+   Output: `docs/00-pm/{feature}.prd.md`
+
+2. **Plan Document Generation**
+   After the 3-perspective review completes, generate a structured Plan document:
+   ```
+   docs/01-plan/features/{feature}.plan.md
+   ```
+   Sections: Executive Summary, Requirements, Scope, Architecture, Timeline, Risks
+
+3. **Design Document Generation**
+   From the approved plan, generate a Design document:
+   ```
+   docs/02-design/features/{feature}.design.md
+   ```
+   Sections: API Contracts, Data Models, Component Structure, Error Handling, UI Specs
+
+### PDCA Cycle Integration
+```
+PM Discovery → Plan (CEO/Eng/Design Review) → Design → Do → Check → Act → Report
+     ↑                    ↑                                        |
+     |                    |                                        |
+     └─── new product ────┘──────── iteration loop ───────────────┘
+```
+
+### Auto-Advance Rules
+After autoplan completes:
+- If plan quality >= 80% → auto-suggest `/pdca design {feature}`
+- If plan quality < 80% → suggest re-review specific sections
+- Quality measured by: completeness of sections, specificity of requirements, clarity of scope
+
+### Multi-Level Planning Depth
+| Level | PM Discovery | Review Passes | Plan Detail |
+|-------|:----------:|:------------:|------------|
+| Starter | Skip | 1 (CEO only) | Minimal (scope + requirements) |
+| Dynamic | Optional | 2-3 (CEO + Eng) | Standard (full plan doc) |
+| Enterprise | Required | 3 (all perspectives) | Comprehensive (+ risk matrix) |

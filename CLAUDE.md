@@ -307,3 +307,56 @@ The active skill lives at `~/.claude/skills/gstack/`. After making changes:
 3. Rebuild: `cd ~/.claude/skills/gstack && bun run build`
 
 Or copy the binary directly: `cp browse/dist/browse ~/.claude/skills/gstack/browse/dist/browse`
+
+## PDCA Integration (gstack-me extension)
+
+gstack-me adds PDCA methodology, specialized agents, and a development pipeline on top of gstack's core skills.
+
+### New Skills
+- `/pdca` — Unified PDCA cycle management (plan/design/do/analyze/iterate/report/status/next)
+- `/pipeline` — 9-phase development pipeline guide
+- `/pm-discovery` — PM Agent Team for product discovery & PRD generation
+
+### Agents
+Agent definitions in `agents/` extend the existing `agents/openai.yaml`:
+- `gap-detector` (opus) — Read-only design-implementation comparison
+- `code-analyzer` (opus) — Read-only code quality scoring
+- `pdca-iterator` (sonnet) — Auto-fix gaps to match design (max 5 iterations)
+- `report-generator` (haiku) — PDCA completion reports
+- `cto-lead` (opus) — Team orchestration & phase decisions
+- Plus: product-manager, frontend-architect, security-architect, enterprise-expert, infra-architect, design-validator, qa-strategist, pm-lead, starter-guide
+
+### Integrated Skills
+Existing gstack skills have `## Integrated:` sections appended:
+- `review/` — + code quality scoring + design gap check
+- `investigate/` — + design-gap awareness
+- `qa/`, `qa-only/` — + zero-script log-based QA
+- `cso/` — + SEO + security architecture review
+- `ship/`, `land-and-deploy/` — + level-based deployment strategy
+- `autoplan/` — + PDCA planning + PM team
+- `design-consultation/` — + mockup pipeline + design system
+- `design-review/` — + spec compliance validation
+- `document-release/` — + PDCA completion reports
+
+### PDCA Document Structure
+```
+docs/
+├── 00-pm/          # PM Discovery PRDs
+├── 01-plan/        # Plan documents
+│   └── features/
+├── 02-design/      # Design specifications
+│   └── features/
+├── 03-analysis/    # Gap analysis reports
+└── 04-report/      # Completion reports
+```
+
+### Templates
+- `templates/pdca/` — Plan, design, analysis, report templates
+- `templates/shared/` — Naming conventions, error handling patterns
+
+### PDCA Status
+State tracked in `.gstack/pdca-status.json` (auto-created on first `/pdca` use).
+
+### Project Levels
+Auto-detected: Starter (static) / Dynamic (fullstack) / Enterprise (microservices).
+Each level adjusts PDCA depth, review passes, and deployment strategy.

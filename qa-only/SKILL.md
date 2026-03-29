@@ -696,3 +696,45 @@ Report filenames use the domain and date: `qa-report-myapp-com-2026-03-12.md`
 
 11. **Never fix bugs.** Find and document only. Do not read source code, edit files, or suggest fixes in the report. Your job is to report what's broken, not to fix it. Use `/qa` for the test-fix-verify loop.
 12. **No test framework detected?** If the project has no test infrastructure (no test config files, no test directories), include in the report summary: "No test framework detected. Run `/qa` to bootstrap one and enable regression test generation."
+
+## Integrated: Zero Script QA (from bkit qa-monitor)
+
+In addition to browser-based QA, apply structured log analysis for backend verification:
+
+### Structured Log QA Methodology
+When the project has Docker or server logs available:
+
+1. **Log Infrastructure Check**
+   - Verify structured JSON logging is configured
+   - Check log levels: ERROR, WARN, INFO, DEBUG
+   - Identify log output location (stdout, file, Docker logs)
+
+2. **Runtime Verification via Logs**
+   ```bash
+   # Docker projects
+   docker compose logs --tail=100 -f [service] 2>&1 | head -200
+
+   # Local dev server
+   tail -f server.log | grep -E '"level":"(error|warn)"'
+   ```
+
+3. **Log-Based Test Patterns**
+   | Pattern | What to Verify | Log Signal |
+   |---------|---------------|------------|
+   | API Health | All endpoints respond | `"status":200` for health check |
+   | Auth Flow | Login/logout works | `"event":"auth.login"` + `"event":"auth.logout"` |
+   | Data CRUD | Create/Read/Update/Delete | `"event":"db.query"` with operation types |
+   | Error Handling | Graceful failures | No unhandled exceptions in ERROR logs |
+   | Performance | Response times | `"duration_ms"` field values < threshold |
+
+4. **Combine with Browser QA**
+   - Run browser QA (standard gstack flow) while monitoring logs simultaneously
+   - Cross-reference: browser shows error → find corresponding log entry
+   - This catches issues invisible to browser-only testing (silent failures, race conditions)
+
+### Multi-Level QA Strategy
+| Project Level | Browser QA | Log QA | Combined |
+|--------------|-----------|--------|----------|
+| Starter (static) | Full | Skip | Browser only |
+| Dynamic (fullstack) | Full | Full | Both + cross-reference |
+| Enterprise (microservices) | Full | Full + distributed tracing | Both + service mesh |

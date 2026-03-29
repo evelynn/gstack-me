@@ -1105,3 +1105,47 @@ If the review exits early before a real review completes (for example, no diff a
 - **Be terse.** One line problem, one line fix. No preamble.
 - **Only flag real problems.** Skip anything that's fine.
 - **Use Greptile reply templates from greptile-triage.md.** Every reply includes evidence. Never post vague replies.
+
+## Integrated: Code Quality Analysis (from bkit code-analyzer)
+
+After completing the standard review steps above, run an additional automated quality analysis pass:
+
+### Quality Scoring Dimensions
+Score each dimension 0-10:
+
+| Dimension | Weight | What to Check |
+|-----------|--------|---------------|
+| Architecture Compliance | 25% | Clean Architecture layers, SOLID principles, dependency direction |
+| Code Duplication | 15% | DRY violations, copy-paste patterns, extractable abstractions |
+| Security Posture | 20% | OWASP Top 10, input validation, auth/authz, secrets management |
+| Performance Patterns | 15% | N+1 queries, unnecessary re-renders, memory leaks, bundle size |
+| Test Coverage Quality | 15% | Edge cases, integration paths, mock vs real boundaries |
+| Convention Adherence | 10% | Naming, file structure, import order, error handling patterns |
+
+### Agent-Assisted Review
+When the diff is large (>500 lines) or touches >10 files, spawn a code-analyzer subagent:
+
+```
+Agent(subagent_type="bkit:code-analyzer") with prompt:
+"Analyze the following diff for code quality issues. Score each dimension 0-10.
+Focus on: {dimensions with score < 7 from initial scan}"
+```
+
+### Design-Implementation Gap Check
+If the project has design documents in `docs/02-design/`:
+1. Read the relevant design spec
+2. Compare actual implementation against design contracts
+3. Report any gaps: missing endpoints, wrong data types, unimplemented error handling
+4. Calculate Match Rate = (implemented items / designed items) * 100
+
+### Output Enhancement
+Add to the review report:
+- **Quality Score**: Weighted average (0-100)
+- **Gap Analysis**: Design vs Implementation match rate (if design docs exist)
+- **Auto-Fix Suggestions**: For issues scoring < 5, provide concrete fix commands
+
+### Escalation Rules
+- Quality Score < 60 → BLOCKED (must fix before merge)
+- Quality Score 60-79 → DONE_WITH_CONCERNS (document known debt)
+- Quality Score >= 80 → Pass (proceed to merge)
+- Any security dimension < 5 → BLOCKED regardless of total score

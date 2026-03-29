@@ -46,7 +46,7 @@ Fork it. Improve it. Make it yours. And if you want to hate on free open source 
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install gstack: run **`git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup`** then add a "gstack" section to CLAUDE.md that says to use the /browse skill from gstack for all web browsing, never use mcp\_\_claude-in-chrome\_\_\* tools, and lists the available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade. Then ask the user if they also want to add gstack to the current project so teammates get it.
+> Install gstack: run **`git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup`** then add a "gstack" section to CLAUDE.md that says to use the /browse skill from gstack for all web browsing, never use mcp\_\_claude-in-chrome\_\_\* tools, and lists the available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade, /pdca, /pipeline, /pm-discovery. Then ask the user if they also want to add gstack to the current project so teammates get it.
 
 ### Step 2: Add to your repo so teammates get it (optional)
 
@@ -273,3 +273,63 @@ Available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-desig
 ## License
 
 MIT. Free forever. Go build something.
+
+---
+
+## gstack-me: PDCA Integration
+
+This fork extends gstack with **PDCA methodology** (Plan→Design→Do→Check→Act), **specialized AI agents**, and a **9-phase development pipeline** — integrated from the bkit vibecoding framework.
+
+### What's New
+
+**3 new skills:**
+- `/pdca` — Unified PDCA cycle management with automatic phase progression
+- `/pipeline` — 9-phase development pipeline (schema → convention → mockup → API → design system → UI → security → review → deployment)
+- `/pm-discovery` — Product management agent team for discovery & PRD generation
+
+**14 agents** for automated quality enforcement:
+- `gap-detector` — compares design docs vs code, calculates match rate
+- `code-analyzer` — scores code quality across 6 dimensions
+- `pdca-iterator` — auto-fixes design-implementation gaps (max 5 iterations)
+- `report-generator` — creates structured completion reports
+- `cto-lead` — orchestrates the team through PDCA phases
+- Plus: product-manager, frontend-architect, security-architect, enterprise-expert, infra-architect, design-validator, qa-strategist, pm-lead, starter-guide
+
+**8 enhanced skills** with bkit integration sections:
+- `/review` — + code quality scoring + design gap check
+- `/qa` + `/qa-only` — + structured log analysis (Zero Script QA)
+- `/cso` — + SEO audit + security architecture review
+- `/ship` + `/land-and-deploy` — + level-based deployment (Starter/Dynamic/Enterprise)
+- `/autoplan` — + PDCA planning + PM team integration
+- `/design-consultation` + `/design-review` — + mockup pipeline + spec validation
+- `/document-release` — + PDCA completion reports
+- `/investigate` — + design-gap awareness
+
+### The PDCA Cycle
+
+```
+PM Discovery → Plan (3-review) → Design → Do → Check (gap analysis) → Act (iterate) → Report
+                                                  │                        ↑
+                                                  └── if match rate < 90% ─┘
+```
+
+### Quick Start (PDCA)
+
+1. `/pdca plan my-feature` — create a structured plan document
+2. `/pdca design my-feature` — write API contracts, data models, component specs
+3. Build the feature
+4. `/pdca analyze my-feature` — compare code vs design (gap analysis)
+5. `/pdca iterate my-feature` — auto-fix gaps until 90%+ match rate
+6. `/pdca report my-feature` — generate completion report
+
+### Templates
+
+PDCA document templates in `templates/pdca/`:
+- `plan.template.md` — Plan document structure
+- `design.template.md` — Design specification structure
+- `analysis.template.md` — Gap analysis report structure
+- `report.template.md` — Completion report structure
+
+Shared patterns in `templates/shared/`:
+- `naming-conventions.md` — File, variable, database, API naming
+- `error-handling-patterns.md` — Error responses, status codes, validation

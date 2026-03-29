@@ -480,3 +480,38 @@ Status:          DONE | DONE_WITH_CONCERNS | BLOCKED
   - DONE — root cause found, fix applied, regression test written, all tests pass
   - DONE_WITH_CONCERNS — fixed but cannot fully verify (e.g., intermittent bug, requires staging)
   - BLOCKED — root cause unclear after investigation, escalated
+
+## Integrated: Design-Implementation Gap Analysis (from bkit gap-detector)
+
+When investigating bugs or unexpected behavior, add a design-gap analysis step:
+
+### Phase 0: Design Document Check (before Root Cause Investigation)
+Before diving into code, check if design documentation exists:
+
+1. Search for design docs: `docs/02-design/`, `docs/01-plan/`, `ARCHITECTURE.md`
+2. If design docs exist:
+   - Compare the buggy behavior against the designed behavior
+   - Check if the bug is a "gap" (design says X, code does Y) vs a "design flaw" (design itself is wrong)
+   - This distinction changes the fix strategy: gap → fix code, flaw → update design first
+
+### Gap-Aware Investigation
+During Phase 1 (Root Cause Investigation), augment with:
+
+| Check | Purpose |
+|-------|---------|
+| Design spec for this component | Is the bug a spec violation? |
+| API contract (if exists) | Does the actual response match the designed schema? |
+| Data model definition | Are field types/constraints matching design? |
+| Error handling spec | Is the error path designed or ad-hoc? |
+
+### Design Sync After Fix
+After implementing the fix (Phase 4):
+1. If the fix changes behavior from what was designed → update design doc
+2. If the fix reveals a missing design section → add it
+3. Run gap analysis: compare updated code against design, target >= 90% match rate
+
+### Integration with PDCA Cycle
+If the project uses PDCA methodology:
+- Bug fix = mini-PDCA cycle: Plan (investigate) → Design (update spec if needed) → Do (fix) → Check (verify)
+- Log the investigation in `docs/03-analysis/` for future reference
+- Update match rate in PDCA status after fix

@@ -1871,3 +1871,44 @@ This step is automatic — never skip it, never ask for confirmation.
 - **Never push without fresh verification evidence.** If code changed after Step 3 tests, re-run before pushing.
 - **Step 3.4 generates coverage tests.** They must pass before committing. Never commit failing tests.
 - **The goal is: user says `/ship`, next thing they see is the review + PR URL + auto-synced docs.**
+
+## Integrated: Level-Based Deployment Strategy (from bkit)
+
+### Project Level Detection
+Before shipping, detect the project complexity level to adjust deployment strategy:
+
+| Detection Signal | Level | Deployment Strategy |
+|-----------------|-------|-------------------|
+| Static HTML/CSS, no package.json | Starter | GitHub Pages / Netlify / Vercel static |
+| Next.js + BaaS (Supabase/bkend) | Dynamic | Vercel / Railway with env management |
+| Docker + K8s + microservices | Enterprise | CI/CD pipeline + staging + canary |
+
+### Level-Specific Ship Workflow
+
+**Starter Level:**
+1. Build static assets
+2. Deploy to static hosting
+3. Verify live URL responds
+4. Done (no canary needed)
+
+**Dynamic Level:**
+1. Standard ship flow (test → review → bump → PR)
+2. After merge: verify preview deployment
+3. Check environment variables are set
+4. Verify API connections (BaaS health check)
+5. Run `/canary` for 15 minutes
+
+**Enterprise Level:**
+1. Standard ship flow
+2. Deploy to staging first
+3. Run full QA suite on staging
+4. Canary deploy (10% traffic)
+5. Monitor for 30 minutes (`/canary`)
+6. Progressive rollout (10% → 50% → 100%)
+7. Rollback plan documented and tested
+
+### PDCA Integration
+If the project uses PDCA:
+- Ship = end of "Do" phase
+- After successful ship → auto-suggest "Check" phase (gap analysis)
+- After Check passes (>= 90%) → auto-suggest "Report" phase

@@ -753,3 +753,60 @@ List all decisions. Flag any that used agent defaults without explicit user conf
 6. **Conversational tone.** This isn't a rigid workflow. If the user wants to talk through a decision, engage as a thoughtful design partner.
 7. **Accept the user's final choice.** Nudge on coherence issues, but never block or refuse to write a DESIGN.md because you disagree with a choice.
 8. **No AI slop in your own output.** Your recommendations, your preview page, your DESIGN.md — all should demonstrate the taste you're asking the user to adopt.
+
+## Integrated: Design System + Mockup Pipeline (from bkit)
+
+### Phase 3: UI/UX Mockup Creation
+Before building the design system, create interactive mockups:
+
+1. **Trend Research**
+   - Analyze current UI/UX trends for the project domain
+   - Reference successful competitors' design patterns
+   - Consider accessibility (WCAG 2.1 AA) from the start
+
+2. **HTML/CSS/JS Prototype**
+   Create a standalone mockup that can be reviewed in browser:
+   ```
+   docs/mockups/{feature}/index.html
+   docs/mockups/{feature}/styles.css
+   docs/mockups/{feature}/interactions.js
+   ```
+   - Use `/browse` to verify the mockup renders correctly
+   - Get user approval before proceeding to implementation
+
+3. **Component Mapping**
+   Map mockup elements to implementation components:
+   ```
+   Mockup Element → Framework Component → Design Token
+   Header Nav     → <Navigation />      → spacing.nav, color.primary
+   Hero Section   → <Hero />            → typography.h1, spacing.section
+   Card Grid      → <CardGrid />        → grid.columns, shadow.card
+   ```
+
+### Phase 5: Platform-Independent Design System
+Build a design system that works across frameworks:
+
+1. **Design Tokens** (JSON format, framework-agnostic)
+   ```json
+   {
+     "color": { "primary": "#3B82F6", "secondary": "#10B981" },
+     "spacing": { "xs": "4px", "sm": "8px", "md": "16px" },
+     "typography": { "body": "16px/1.5 Inter", "h1": "36px/1.2 Inter" }
+   }
+   ```
+
+2. **Core Components** (framework-specific implementations)
+   - Button, Input, Card, Modal, Table, Badge, Avatar
+   - Each with: variants, sizes, states, accessibility attributes
+
+3. **Composite Components** (domain-specific)
+   - Built from core components
+   - Match the approved mockup designs
+   - Include responsive breakpoints
+
+### Design Review Integration
+After building the design system, use `/design-review` to:
+1. Compare live implementation against mockup screenshots
+2. Check spacing, alignment, color accuracy
+3. Verify responsive behavior at all breakpoints
+4. Run AI slop detection (generic patterns, placeholder text)

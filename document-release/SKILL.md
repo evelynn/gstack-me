@@ -694,3 +694,51 @@ Where status is one of:
 - **Discoverability matters.** Every doc file should be reachable from README or CLAUDE.md.
 - **Voice: friendly, user-forward, not obscure.** Write like you're explaining to a smart person
   who hasn't seen the code.
+
+## Integrated: PDCA Completion Report (from bkit report-generator)
+
+### Enhanced Documentation Update
+After the standard doc audit, generate a PDCA completion report if the project uses PDCA:
+
+1. **Executive Summary Table**
+   ```markdown
+   | Item | Detail |
+   |------|--------|
+   | Feature | {feature name} |
+   | Duration | {start date} → {end date} |
+   | PDCA Cycles | {number of iterations} |
+   | Final Match Rate | {percentage}% |
+   | Files Changed | {count} |
+   | Lines Added/Removed | +{added} / -{removed} |
+   ```
+
+2. **Value Delivered (4-Perspective)**
+   | Perspective | Content |
+   |------------|---------|
+   | Problem | What user pain was solved? |
+   | Solution | What was built? |
+   | UX Effect | How does the user experience change? |
+   | Core Value | What business value was delivered? |
+
+3. **PDCA Phase Summary**
+   - Plan: Key decisions and scope choices
+   - Design: Architecture and API design highlights
+   - Do: Implementation approach and challenges
+   - Check: Quality metrics and gap analysis results
+   - Act: Iterations performed and improvements made
+
+4. **Lessons Learned**
+   - What went well (repeat in future)
+   - What could improve (action items)
+   - Technical debt created (track for future)
+
+5. **Output Location**
+   ```
+   docs/04-report/{feature}.report.md
+   ```
+
+### Archive Workflow
+After report generation:
+1. Move all PDCA documents to `docs/archive/{date}/{feature}/`
+2. Update project README if feature is user-facing
+3. Clean up temporary analysis files
