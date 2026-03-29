@@ -1,265 +1,298 @@
-# gstack
+# gstack-me
 
-> "I don't think I've typed like a line of code probably since December, basically, which is an extremely large change." — [Andrej Karpathy](https://fortune.com/2026/03/21/andrej-karpathy-openai-cofounder-ai-agents-coding-state-of-psychosis-openclaw/), No Priors podcast, March 2026
+**gstack + PDCA = 완전 자동화된 AI 개발 팩토리**
 
-When I heard Karpathy say this, I wanted to find out how. How does one person ship like a team of twenty? Peter Steinberger built [OpenClaw](https://github.com/openclaw/openclaw) — 247K GitHub stars — essentially solo with AI agents. The revolution is here. A single builder with the right tooling can move faster than a traditional team.
+gstack의 28개 엔지니어링 스킬(브라우저 QA, 코드 리뷰, 보안 감사, 배포 자동화)과
+PDCA 방법론(설계 기반 개발, 갭 분석, 자동 반복 개선, 14개 AI 에이전트)을 융합한 통합 개발 시스템.
 
-I'm [Garry Tan](https://x.com/garrytan), President & CEO of [Y Combinator](https://www.ycombinator.com/). I've worked with thousands of startups — Coinbase, Instacart, Rippling — when they were one or two people in a garage. Before YC, I was one of the first eng/PM/designers at Palantir, cofounded Posterous (sold to Twitter), and built Bookface, YC's internal social network.
-
-**gstack is my answer.** I've been building products for twenty years, and right now I'm shipping more code than I ever have. In the last 60 days: **600,000+ lines of production code** (35% tests), **10,000-20,000 lines per day**, part-time, while running YC full-time. Here's my last `/retro` across 3 projects: **140,751 lines added, 362 commits, ~115k net LOC** in one week.
-
-**2026 — 1,237 contributions and counting:**
-
-![GitHub contributions 2026 — 1,237 contributions, massive acceleration in Jan-Mar](docs/images/github-2026.png)
-
-**2013 — when I built Bookface at YC (772 contributions):**
-
-![GitHub contributions 2013 — 772 contributions building Bookface at YC](docs/images/github-2013.png)
-
-Same person. Different era. The difference is the tooling.
-
-**gstack is how I do it.** It turns Claude Code into a virtual engineering team — a CEO who rethinks the product, an eng manager who locks architecture, a designer who catches AI slop, a reviewer who finds production bugs, a QA lead who opens a real browser, a security officer who runs OWASP + STRIDE audits, and a release engineer who ships the PR. Twenty specialists and eight power tools, all slash commands, all Markdown, all free, MIT license.
-
-This is my open source software factory. I use it every day. I'm sharing it because these tools should be available to everyone.
-
-Fork it. Improve it. Make it yours. And if you want to hate on free open source software — you're welcome to, but I'd rather you just try it first.
-
-**Who this is for:**
-- **Founders and CEOs** — especially technical ones who still want to ship
-- **First-time Claude Code users** — structured roles instead of a blank prompt
-- **Tech leads and staff engineers** — rigorous review, QA, and release automation on every PR
-
-## Quick start
-
-1. Install gstack (30 seconds — see below)
-2. Run `/office-hours` — describe what you're building
-3. Run `/plan-ceo-review` on any feature idea
-4. Run `/review` on any branch with changes
-5. Run `/qa` on your staging URL
-6. Stop there. You'll know if this is for you.
-
-## Install — 30 seconds
-
-**Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Git](https://git-scm.com/), [Bun](https://bun.sh/) v1.0+, [Node.js](https://nodejs.org/) (Windows only)
-
-### Step 1: Install on your machine
-
-Open Claude Code and paste this. Claude does the rest.
-
-> Install gstack: run **`git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup`** then add a "gstack" section to CLAUDE.md that says to use the /browse skill from gstack for all web browsing, never use mcp\_\_claude-in-chrome\_\_\* tools, and lists the available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade, /pdca, /pipeline, /pm-discovery. Then ask the user if they also want to add gstack to the current project so teammates get it.
-
-### Step 2: Add to your repo so teammates get it (optional)
-
-> Add gstack to this project: run **`cp -Rf ~/.claude/skills/gstack .claude/skills/gstack && rm -rf .claude/skills/gstack/.git && cd .claude/skills/gstack && ./setup`** then add a "gstack" section to this project's CLAUDE.md that says to use the /browse skill from gstack for all web browsing, never use mcp\_\_claude-in-chrome\_\_\* tools, lists the available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade, and tells Claude that if gstack skills aren't working, run `cd .claude/skills/gstack && ./setup` to build the binary and register skills.
-
-Real files get committed to your repo (not a submodule), so `git clone` just works. Everything lives inside `.claude/`. Nothing touches your PATH or runs in the background.
-
-### Codex, Gemini CLI, or Cursor
-
-gstack works on any agent that supports the [SKILL.md standard](https://github.com/anthropics/claude-code). Skills live in `.agents/skills/` and are discovered automatically.
-
-Install to one repo:
-
-```bash
-git clone https://github.com/garrytan/gstack.git .agents/skills/gstack
-cd .agents/skills/gstack && ./setup --host codex
-```
-
-When setup runs from `.agents/skills/gstack`, it installs the generated Codex skills next to it in the same repo and does not write to `~/.codex/skills`.
-
-Install once for your user account:
-
-```bash
-git clone https://github.com/garrytan/gstack.git ~/gstack
-cd ~/gstack && ./setup --host codex
-```
-
-`setup --host codex` creates the runtime root at `~/.codex/skills/gstack` and
-links the generated Codex skills at the top level. This avoids duplicate skill
-discovery from the source repo checkout.
-
-Or let setup auto-detect which agents you have installed:
-
-```bash
-git clone https://github.com/garrytan/gstack.git ~/gstack
-cd ~/gstack && ./setup --host auto
-```
-
-For Codex-compatible hosts, setup now supports both repo-local installs from `.agents/skills/gstack` and user-global installs from `~/.codex/skills/gstack`. All 28 skills work across all supported agents. Hook-based safety skills (careful, freeze, guard) use inline safety advisory prose on non-Claude hosts.
-
-## See it work
-
-```
-You:    I want to build a daily briefing app for my calendar.
-You:    /office-hours
-Claude: [asks about the pain — specific examples, not hypotheticals]
-
-You:    Multiple Google calendars, events with stale info, wrong locations.
-        Prep takes forever and the results aren't good enough...
-
-Claude: I'm going to push back on the framing. You said "daily briefing
-        app." But what you actually described is a personal chief of
-        staff AI.
-        [extracts 5 capabilities you didn't realize you were describing]
-        [challenges 4 premises — you agree, disagree, or adjust]
-        [generates 3 implementation approaches with effort estimates]
-        RECOMMENDATION: Ship the narrowest wedge tomorrow, learn from
-        real usage. The full vision is a 3-month project — start with
-        the daily briefing that actually works.
-        [writes design doc → feeds into downstream skills automatically]
-
-You:    /plan-ceo-review
-        [reads the design doc, challenges scope, runs 10-section review]
-
-You:    /plan-eng-review
-        [ASCII diagrams for data flow, state machines, error paths]
-        [test matrix, failure modes, security concerns]
-
-You:    Approve plan. Exit plan mode.
-        [writes 2,400 lines across 11 files. ~8 minutes.]
-
-You:    /review
-        [AUTO-FIXED] 2 issues. [ASK] Race condition → you approve fix.
-
-You:    /qa https://staging.myapp.com
-        [opens real browser, clicks through flows, finds and fixes a bug]
-
-You:    /ship
-        Tests: 42 → 51 (+9 new). PR: github.com/you/app/pull/42
-```
-
-You said "daily briefing app." The agent said "you're building a chief of staff AI" — because it listened to your pain, not your feature request. Eight commands, end to end. That is not a copilot. That is a team.
-
-## The sprint
-
-gstack is a process, not a collection of tools. The skills run in the order a sprint runs:
-
-**Think → Plan → Build → Review → Test → Ship → Reflect**
-
-Each skill feeds into the next. `/office-hours` writes a design doc that `/plan-ceo-review` reads. `/plan-eng-review` writes a test plan that `/qa` picks up. `/review` catches bugs that `/ship` verifies are fixed. Nothing falls through the cracks because every step knows what came before it.
-
-| Skill | Your specialist | What they do |
-|-------|----------------|--------------|
-| `/office-hours` | **YC Office Hours** | Start here. Six forcing questions that reframe your product before you write code. Pushes back on your framing, challenges premises, generates implementation alternatives. Design doc feeds into every downstream skill. |
-| `/plan-ceo-review` | **CEO / Founder** | Rethink the problem. Find the 10-star product hiding inside the request. Four modes: Expansion, Selective Expansion, Hold Scope, Reduction. |
-| `/plan-eng-review` | **Eng Manager** | Lock in architecture, data flow, diagrams, edge cases, and tests. Forces hidden assumptions into the open. |
-| `/plan-design-review` | **Senior Designer** | Rates each design dimension 0-10, explains what a 10 looks like, then edits the plan to get there. AI Slop detection. Interactive — one AskUserQuestion per design choice. |
-| `/design-consultation` | **Design Partner** | Build a complete design system from scratch. Researches the landscape, proposes creative risks, generates realistic product mockups. |
-| `/review` | **Staff Engineer** | Find the bugs that pass CI but blow up in production. Auto-fixes the obvious ones. Flags completeness gaps. |
-| `/investigate` | **Debugger** | Systematic root-cause debugging. Iron Law: no fixes without investigation. Traces data flow, tests hypotheses, stops after 3 failed fixes. |
-| `/design-review` | **Designer Who Codes** | Same audit as /plan-design-review, then fixes what it finds. Atomic commits, before/after screenshots. |
-| `/qa` | **QA Lead** | Test your app, find bugs, fix them with atomic commits, re-verify. Auto-generates regression tests for every fix. |
-| `/qa-only` | **QA Reporter** | Same methodology as /qa but report only. Pure bug report without code changes. |
-| `/cso` | **Chief Security Officer** | OWASP Top 10 + STRIDE threat model. Zero-noise: 17 false positive exclusions, 8/10+ confidence gate, independent finding verification. Each finding includes a concrete exploit scenario. |
-| `/ship` | **Release Engineer** | Sync main, run tests, audit coverage, push, open PR. Bootstraps test frameworks if you don't have one. |
-| `/land-and-deploy` | **Release Engineer** | Merge the PR, wait for CI and deploy, verify production health. One command from "approved" to "verified in production." |
-| `/canary` | **SRE** | Post-deploy monitoring loop. Watches for console errors, performance regressions, and page failures. |
-| `/benchmark` | **Performance Engineer** | Baseline page load times, Core Web Vitals, and resource sizes. Compare before/after on every PR. |
-| `/document-release` | **Technical Writer** | Update all project docs to match what you just shipped. Catches stale READMEs automatically. |
-| `/retro` | **Eng Manager** | Team-aware weekly retro. Per-person breakdowns, shipping streaks, test health trends, growth opportunities. `/retro global` runs across all your projects and AI tools (Claude Code, Codex, Gemini). |
-| `/browse` | **QA Engineer** | Give the agent eyes. Real Chromium browser, real clicks, real screenshots. ~100ms per command. `$B connect` launches your real Chrome as a headed window — watch every action live. |
-| `/setup-browser-cookies` | **Session Manager** | Import cookies from your real browser (Chrome, Arc, Brave, Edge) into the headless session. Test authenticated pages. |
-| `/autoplan` | **Review Pipeline** | One command, fully reviewed plan. Runs CEO → design → eng review automatically with encoded decision principles. Surfaces only taste decisions for your approval. |
-
-### Power tools
-
-| Skill | What it does |
-|-------|-------------|
-| `/codex` | **Second Opinion** — independent code review from OpenAI Codex CLI. Three modes: review (pass/fail gate), adversarial challenge, and open consultation. Cross-model analysis when both `/review` and `/codex` have run. |
-| `/careful` | **Safety Guardrails** — warns before destructive commands (rm -rf, DROP TABLE, force-push). Say "be careful" to activate. Override any warning. |
-| `/freeze` | **Edit Lock** — restrict file edits to one directory. Prevents accidental changes outside scope while debugging. |
-| `/guard` | **Full Safety** — `/careful` + `/freeze` in one command. Maximum safety for prod work. |
-| `/unfreeze` | **Unlock** — remove the `/freeze` boundary. |
-| `/setup-deploy` | **Deploy Configurator** — one-time setup for `/land-and-deploy`. Detects your platform, production URL, and deploy commands. |
-| `/gstack-upgrade` | **Self-Updater** — upgrade gstack to latest. Detects global vs vendored install, syncs both, shows what changed. |
-
-**[Deep dives with examples and philosophy for every skill →](docs/skills.md)**
-
-## Parallel sprints
-
-gstack works well with one sprint. It gets interesting with ten running at once.
-
-**Design is at the heart.** `/design-consultation` doesn't just pick fonts. It researches what's out there in your space, proposes safe choices AND creative risks, generates realistic mockups of your actual product, and writes `DESIGN.md` — and then `/design-review` and `/plan-eng-review` read what you chose. Design decisions flow through the whole system.
-
-**`/qa` was a massive unlock.** It let me go from 6 to 12 parallel workers. Claude Code saying *"I SEE THE ISSUE"* and then actually fixing it, generating a regression test, and verifying the fix — that changed how I work. The agent has eyes now.
-
-**Smart review routing.** Just like at a well-run startup: CEO doesn't have to look at infra bug fixes, design review isn't needed for backend changes. gstack tracks what reviews are run, figures out what's appropriate, and just does the smart thing. The Review Readiness Dashboard tells you where you stand before you ship.
-
-**Test everything.** `/ship` bootstraps test frameworks from scratch if your project doesn't have one. Every `/ship` run produces a coverage audit. Every `/qa` bug fix generates a regression test. 100% test coverage is the goal — tests make vibe coding safe instead of yolo coding.
-
-**`/document-release` is the engineer you never had.** It reads every doc file in your project, cross-references the diff, and updates everything that drifted. README, ARCHITECTURE, CONTRIBUTING, CLAUDE.md, TODOS — all kept current automatically. And now `/ship` auto-invokes it — docs stay current without an extra command.
-
-**Real browser mode.** `$B connect` launches your actual Chrome as a headed window controlled by Playwright. You watch Claude click, fill, and navigate in real time — same window, same screen. A subtle green shimmer at the top edge tells you which Chrome window gstack controls. All existing browse commands work unchanged. `$B disconnect` returns to headless. A Chrome extension Side Panel shows a live activity feed of every command and a chat sidebar where you can direct Claude. This is co-presence — Claude isn't remote-controlling a hidden browser, it's sitting next to you in the same cockpit.
-
-**Sidebar agent — your AI browser assistant.** Type natural language instructions in the Chrome side panel and a child Claude instance executes them. "Navigate to the settings page and screenshot it." "Fill out this form with test data." "Go through every item in this list and extract the prices." Each task gets up to 5 minutes. The sidebar agent runs in an isolated session, so it won't interfere with your main Claude Code window. It's like having a second pair of hands in the browser.
-
-**Personal automation.** The sidebar agent isn't just for dev workflows. Example: "Browse my kid's school parent portal and add all the other parents' names, phone numbers, and photos to my Google Contacts." Two ways to get authenticated: (1) log in once in the headed browser — your session persists, or (2) run `/setup-browser-cookies` to import cookies from your real Chrome. Once authenticated, Claude navigates the directory, extracts the data, and creates the contacts.
-
-**Browser handoff when the AI gets stuck.** Hit a CAPTCHA, auth wall, or MFA prompt? `$B handoff` opens a visible Chrome at the exact same page with all your cookies and tabs intact. Solve the problem, tell Claude you're done, `$B resume` picks up right where it left off. The agent even suggests it automatically after 3 consecutive failures.
-
-**Multi-AI second opinion.** `/codex` gets an independent review from OpenAI's Codex CLI — a completely different AI looking at the same diff. Three modes: code review with a pass/fail gate, adversarial challenge that actively tries to break your code, and open consultation with session continuity. When both `/review` (Claude) and `/codex` (OpenAI) have reviewed the same branch, you get a cross-model analysis showing which findings overlap and which are unique to each.
-
-**Safety guardrails on demand.** Say "be careful" and `/careful` warns before any destructive command — rm -rf, DROP TABLE, force-push, git reset --hard. `/freeze` locks edits to one directory while debugging so Claude can't accidentally "fix" unrelated code. `/guard` activates both. `/investigate` auto-freezes to the module being investigated.
-
-**Proactive skill suggestions.** gstack notices what stage you're in — brainstorming, reviewing, debugging, testing — and suggests the right skill. Don't like it? Say "stop suggesting" and it remembers across sessions.
-
-## 10-15 parallel sprints
-
-gstack is powerful with one sprint. It is transformative with ten running at once.
-
-[Conductor](https://conductor.build) runs multiple Claude Code sessions in parallel — each in its own isolated workspace. One session running `/office-hours` on a new idea, another doing `/review` on a PR, a third implementing a feature, a fourth running `/qa` on staging, and six more on other branches. All at the same time. I regularly run 10-15 parallel sprints — that's the practical max right now.
-
-The sprint structure is what makes parallelism work. Without a process, ten agents is ten sources of chaos. With a process — think, plan, build, review, test, ship — each agent knows exactly what to do and when to stop. You manage them the way a CEO manages a team: check in on the decisions that matter, let the rest run.
+> 원본 [gstack](https://github.com/garrytan/gstack) by Garry Tan (YC President)의 포크.
+> bkit vibecoding framework의 PDCA 방법론, 에이전트 시스템, 개발 파이프라인을 통합.
 
 ---
 
-Free, MIT licensed, open source. No premium tier, no waitlist.
+## 핵심 차별점: gstack vs gstack-me
 
-I open sourced how I build software. You can fork it and make it your own.
+| | gstack (원본) | gstack-me (통합) |
+|---|---|---|
+| **스킬 수** | 28개 | 31개 (+3 신규) |
+| **에이전트** | 없음 | 14개 AI 에이전트 |
+| **개발 방법론** | 스프린트 기반 | PDCA 사이클 (설계 &rarr; 구현 &rarr; 검증 &rarr; 개선) |
+| **품질 지표** | 헬스 스코어 | 헬스 + Match Rate + Quality Score |
+| **설계 문서** | 수동 | 자동 생성 + 구현 대비 검증 |
+| **QA 방식** | 브라우저 QA | 브라우저 + 로그 QA + Gap Analysis |
+| **자동화 레벨** | 스킬별 독립 | `/dev-all` 원커맨드 전체 사이클 |
+| **프로젝트 적응** | 일률적 | Starter/Dynamic/Enterprise 자동 조정 |
 
-> **We're hiring.** Want to ship 10K+ LOC/day and help harden gstack?
-> Come work at YC — [ycombinator.com/software](https://ycombinator.com/software)
-> Extremely competitive salary and equity. San Francisco, Dogpatch District.
+---
 
-## Docs
+## Quick Start
 
-| Doc | What it covers |
-|-----|---------------|
-| [Skill Deep Dives](docs/skills.md) | Philosophy, examples, and workflow for every skill (includes Greptile integration) |
-| [Builder Ethos](ETHOS.md) | Builder philosophy: Boil the Lake, Search Before Building, three layers of knowledge |
-| [Architecture](ARCHITECTURE.md) | Design decisions and system internals |
-| [Browser Reference](BROWSER.md) | Full command reference for `/browse` |
-| [Contributing](CONTRIBUTING.md) | Dev setup, testing, contributor mode, and dev mode |
-| [Changelog](CHANGELOG.md) | What's new in every version |
+### 방법 1: `/dev-all` &mdash; 원커맨드 전체 사이클
 
-## Privacy & Telemetry
+```
+/dev-all 사용자 인증 시스템
+```
 
-gstack includes **opt-in** usage telemetry to help improve the project. Here's exactly what happens:
+레벨 감지 &rarr; 기획 &rarr; 설계 &rarr; 구현 &rarr; QA + Gap Analysis &rarr; 디자인 QA &rarr; 코드 리뷰 &rarr; 보고서 + 배포까지 자동 진행.
 
-- **Default is off.** Nothing is sent anywhere unless you explicitly say yes.
-- **On first run,** gstack asks if you want to share anonymous usage data. You can say no.
-- **What's sent (if you opt in):** skill name, duration, success/fail, gstack version, OS. That's it.
-- **What's never sent:** code, file paths, repo names, branch names, prompts, or any user-generated content.
-- **Change anytime:** `gstack-config set telemetry off` disables everything instantly.
+### 방법 2: 스킬 개별 사용
 
-Data is stored in [Supabase](https://supabase.com) (open source Firebase alternative). The schema is in [`supabase/migrations/`](supabase/migrations/) — you can verify exactly what's collected. The Supabase publishable key in the repo is a public key (like a Firebase API key) — row-level security policies deny all direct access. Telemetry flows through validated edge functions that enforce schema checks, event type allowlists, and field length limits.
+```
+/office-hours           — 제품 아이디어 브레인스토밍
+/pdca plan my-feature   — 구조화된 기획 문서 생성
+/pdca design my-feature — API 계약, 데이터 모델, 컴포넌트 설계
+(구현)
+/pdca analyze my-feature— 설계 vs 구현 갭 분석 (Match Rate 산출)
+/pdca iterate my-feature— 갭 자동 수정 (90% 이상까지 반복)
+/review                 — 코드 리뷰 + 품질 스코어링
+/qa                     — 브라우저 QA + 로그 QA
+/ship                   — PR 생성 + 배포
+/pdca report my-feature — 완료 보고서 생성
+```
 
-**Local analytics are always available.** Run `gstack-analytics` to see your personal usage dashboard from the local JSONL file — no remote data needed.
+---
 
-## Troubleshooting
+## 설치
 
-**Skill not showing up?** `cd ~/.claude/skills/gstack && ./setup`
+**요구사항:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Git](https://git-scm.com/), [Bun](https://bun.sh/) v1.0+, [Node.js](https://nodejs.org/) (Windows만)
 
-**`/browse` fails?** `cd ~/.claude/skills/gstack && bun install && bun run build`
+### 머신에 설치 (30초)
 
-**Stale install?** Run `/gstack-upgrade` — or set `auto_upgrade: true` in `~/.gstack/config.yaml`
+Claude Code에서 이 메시지를 붙여넣으세요:
 
-**Codex says "Skipped loading skill(s) due to invalid SKILL.md"?** Your Codex skill descriptions are stale. Fix: `cd ~/.codex/skills/gstack && git pull && ./setup --host codex` — or for repo-local installs: `cd "$(readlink -f .agents/skills/gstack)" && git pull && ./setup --host codex`
+> Install gstack-me: run **`git clone https://github.com/evelynn/gstack-me.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup`** then add a "gstack" section to CLAUDE.md listing available skills.
 
-**Windows users:** gstack works on Windows 11 via Git Bash or WSL. Node.js is required in addition to Bun — Bun has a known bug with Playwright's pipe transport on Windows ([bun#4253](https://github.com/oven-sh/bun/issues/4253)). The browse server automatically falls back to Node.js. Make sure both `bun` and `node` are on your PATH.
+### 프로젝트에 추가 (팀 공유용)
 
-**Claude says it can't see the skills?** Make sure your project's `CLAUDE.md` has a gstack section. Add this:
+```bash
+cp -Rf ~/.claude/skills/gstack .claude/skills/gstack
+rm -rf .claude/skills/gstack/.git
+cd .claude/skills/gstack && ./setup
+```
 
+---
+
+## 전체 스킬 맵 (31개 + /dev-all)
+
+### PDCA + Pipeline (신규 통합)
+
+| 스킬 | 역할 |
+|------|------|
+| `/pdca` | PDCA 사이클 통합 관리 (plan/design/do/analyze/iterate/report/status/next) |
+| `/pipeline` | 9단계 개발 파이프라인 가이드 (스키마 &rarr; 배포) |
+| `/pm-discovery` | PM 에이전트 팀 &mdash; 제품 발견, 시장 조사, PRD 생성 |
+| `/dev-all` | 원커맨드 전체 사이클 자동화 (기획 &rarr; 배포) |
+
+### 기획 & 리뷰 (Plan)
+
+| 스킬 | 역할 | 통합 강화 |
+|------|------|----------|
+| `/office-hours` | YC 스타일 브레인스토밍 | |
+| `/plan-ceo-review` | CEO 관점 리뷰 | |
+| `/plan-eng-review` | 엔지니어링 관점 리뷰 | |
+| `/plan-design-review` | 디자인 관점 리뷰 | |
+| `/autoplan` | 3관점 리뷰 자동 파이프라인 | + PDCA Plan + PM팀 통합 |
+
+### 설계 & 디자인 (Design)
+
+| 스킬 | 역할 | 통합 강화 |
+|------|------|----------|
+| `/design-consultation` | 디자인 시스템 구축 | + 목업 파이프라인 + 디자인 토큰 |
+| `/design-review` | 시각 QA + 수정 루프 | + 설계 스펙 검증 (Match Rate) |
+
+### 구현 & 디버깅 (Do)
+
+| 스킬 | 역할 | 통합 강화 |
+|------|------|----------|
+| `/review` | PR 코드 리뷰 | + 6차원 품질 스코어링 + 설계 갭 체크 |
+| `/investigate` | 체계적 디버깅 | + 설계-구현 갭 인식 |
+| `/codex` | OpenAI Codex 독립 리뷰 | |
+
+### QA & 검증 (Check)
+
+| 스킬 | 역할 | 통합 강화 |
+|------|------|----------|
+| `/qa` | 브라우저 QA + 버그 수정 | + Zero Script 로그 QA |
+| `/qa-only` | QA 리포트만 | + Zero Script 로그 QA |
+| `/cso` | 보안 감사 (OWASP/STRIDE) | + SEO + 보안 아키텍처 리뷰 |
+| `/benchmark` | 성능 회귀 감지 | |
+
+### 배포 & 모니터링 (Ship)
+
+| 스킬 | 역할 | 통합 강화 |
+|------|------|----------|
+| `/ship` | 테스트 &rarr; 리뷰 &rarr; PR | + 레벨별 배포 전략 |
+| `/land-and-deploy` | PR 머지 &rarr; 배포 &rarr; 검증 | + 레벨별 배포 전략 |
+| `/canary` | 배포 후 모니터링 | |
+| `/document-release` | 배포 후 문서 업데이트 | + PDCA 완료 보고서 |
+
+### 브라우저 & 도구
+
+| 스킬 | 역할 |
+|------|------|
+| `/browse` | 헤드리스 Chromium (~100ms/커맨드, 50+ 명령어) |
+| `/connect-chrome` | 실제 Chrome 연결 (Side Panel 라이브 피드) |
+| `/setup-browser-cookies` | 브라우저 쿠키 가져오기 |
+| `/setup-deploy` | 배포 플랫폼 설정 |
+| `/retro` | 주간 회고 (인당 기여도, 코드 품질 트렌드) |
+
+### 안전 장치
+
+| 스킬 | 역할 |
+|------|------|
+| `/careful` | 파괴적 명령어 경고 (rm -rf, DROP TABLE, force-push) |
+| `/freeze` | 디렉토리 편집 잠금 |
+| `/guard` | careful + freeze 동시 활성화 |
+| `/unfreeze` | 편집 잠금 해제 |
+| `/gstack-upgrade` | 업그레이드 |
+
+---
+
+## AI 에이전트 시스템 (14개)
+
+PDCA 각 단계에서 자동 작동하는 전문 에이전트:
+
+| 에이전트 | 모델 | 단계 | 역할 |
+|---------|:----:|------|------|
+| `gap-detector` | opus | Check | 설계 vs 코드 비교, Match Rate 산출 |
+| `code-analyzer` | opus | Check | 6차원 코드 품질 스코어링 |
+| `pdca-iterator` | sonnet | Act | 설계 갭 자동 수정 (최대 5회) |
+| `report-generator` | haiku | Report | 완료 보고서 생성 |
+| `cto-lead` | opus | 전체 | 팀 오케스트레이션, 단계 진행 결정 |
+| `product-manager` | sonnet | Plan | 요구사항 분석, Plan 문서 생성 |
+| `frontend-architect` | sonnet | Design/Do | UI 아키텍처, 컴포넌트 설계 |
+| `security-architect` | opus | Design/Check | 보안 리뷰, OWASP 컴플라이언스 |
+| `enterprise-expert` | opus | Design | 마이크로서비스, 확장성 아키텍처 |
+| `infra-architect` | sonnet | Design | AWS/K8s/Terraform 인프라 |
+| `design-validator` | sonnet | Design | 설계 문서 완전성 검증 |
+| `qa-strategist` | sonnet | Check | 테스트 전략 수립 |
+| `pm-lead` | opus | PM | PM Discovery 오케스트레이션 |
+| `starter-guide` | haiku | 전체 | 초보자 가이드 |
+
+---
+
+## PDCA 워크플로우
+
+```
+[PM Discovery] -> [Plan + Review] -> [Design] -> [Do] -> [Check] -> [Act] -> [Report]
+      |                |                |          |        |         |         |
+  /pm-discovery    /autoplan       /design-*    /ship    /qa       /pdca     /document-
+                   /plan-*-review              /review  /cso      iterate    release
+                                               /browse  /benchmark
+                                                        /pdca analyze
+```
+
+### Match Rate: 설계-구현 일치율
+
+PDCA의 핵심 지표. gap-detector가 설계 문서의 모든 항목을 코드와 대조하여 산출:
+
+```
+Match Rate = (구현 항목 + 부분 구현*0.5) / 전체 설계 항목 * 100
+
+>= 90%  ->  Report 단계로 진행
+70-89%  ->  수동/자동 수정 선택
+< 70%   ->  설계 문서 재검토 필요
+```
+
+### 프로젝트 레벨 자동 감지
+
+| 감지 신호 | 레벨 | PDCA 깊이 | 배포 전략 |
+|----------|------|----------|----------|
+| 정적 HTML/CSS | **Starter** | Plan &rarr; Do &rarr; Report | GitHub Pages / Netlify |
+| Next.js + DB/API | **Dynamic** | 전체 PDCA | Vercel / Railway |
+| Docker + K8s | **Enterprise** | PM + 전체 PDCA + 보안 | CI/CD + 카나리 |
+
+---
+
+## `/dev-all` &mdash; 원커맨드 전체 사이클
+
+```
+/dev-all <기능 설명>
+```
+
+8단계 자동 진행:
+
+| Phase | 내용 | 활용 스킬 |
+|:-----:|------|----------|
+| 0 | 레벨 감지 + PDCA 초기화 | `/pdca status` |
+| 1 | 기획 | `/pm-discovery` &rarr; `/office-hours` &rarr; `/autoplan` &rarr; `/pdca plan` |
+| 2 | 설계 | `/pdca design` &rarr; `/design-consultation` |
+| 3 | 구현 | 설계 문서 기반 코딩 |
+| 4 | QA + Gap Analysis | `/qa` + `/pdca analyze` + `/pdca iterate` (90%까지) |
+| 5 | 디자인 QA | `/design-review` (+ 스펙 검증) |
+| 6 | 코드 리뷰 | `/review` (+ Quality Score) + `/cso` |
+| 7 | 배포 | `/pdca report` &rarr; `/ship` &rarr; `/land-and-deploy` &rarr; `/canary` |
+
+레벨별 자동 조정:
+
+| Phase | Starter | Dynamic | Enterprise |
+|:-----:|:-------:|:-------:|:----------:|
+| 기획 | 축소 | office-hours + PDCA | PM Discovery + autoplan |
+| 설계 | 스킵 | PDCA Design | Design + consultation |
+| QA | 1회 | QA 루프 + Gap | QA + Gap + Log QA |
+| 리뷰 | 1회 | review 루프 | review + cso + Quality |
+| 배포 | ship만 | Report + ship | Report + ship + canary |
+
+---
+
+## PDCA 문서 구조
+
+```
+docs/
+├── 00-pm/           ← PM Discovery PRD
+├── 01-plan/         ← Plan 문서
+│   └── features/
+├── 02-design/       ← Design 사양서
+│   └── features/
+├── 03-analysis/     ← Gap Analysis 보고서
+└── 04-report/       ← 완료 보고서
+```
+
+### 템플릿 (`templates/`)
+
+| 템플릿 | 용도 |
+|--------|------|
+| `pdca/plan.template.md` | 요구사항, 범위, 아키텍처, 리스크 |
+| `pdca/design.template.md` | API 계약, 데이터 모델, 컴포넌트, UI 스펙 |
+| `pdca/analysis.template.md` | Match Rate, 갭 분류, 추천 |
+| `pdca/report.template.md` | Executive Summary, 4관점 가치, 교훈 |
+| `shared/naming-conventions.md` | 파일, 변수, DB, API 네이밍 |
+| `shared/error-handling-patterns.md` | 에러 응답, HTTP 상태 코드, 검증 |
+
+---
+
+## 브라우저 자동화
+
+gstack의 전체 브라우저 자동화 기능 포함:
+
+- **`/browse`** &mdash; 헤드리스 Chromium, 50+ 명령어, ~100ms/커맨드
+- **`$B connect`** &mdash; 실제 Chrome 연결 + Side Panel 라이브 피드
+- **`$B handoff`** / **`$B resume`** &mdash; CAPTCHA/MFA 해결 후 이어서
+- **Sidebar Agent** &mdash; Side Panel에서 자연어 브라우저 조작
+- **`/setup-browser-cookies`** &mdash; 인증 페이지 테스트용 쿠키 가져오기
+
+---
+
+## 빌드 명령
+
+```bash
+bun install              # 의존성 설치
+bun test                 # 테스트 (무료, <5초)
+bun run build            # 문서 생성 + 바이너리 컴파일
+bun run gen:skill-docs   # SKILL.md 템플릿에서 재생성
+bun run skill:check      # 전체 스킬 헬스 대시보드
+```
+
+---
+
+## 트러블슈팅
+
+- **스킬 안 보임?** `cd ~/.claude/skills/gstack && ./setup`
+- **`/browse` 실패?** `cd ~/.claude/skills/gstack && bun install && bun run build`
+- **업그레이드:** `/gstack-upgrade` 또는 `~/.gstack/config.yaml`에서 `auto_upgrade: true`
+- **Windows:** Git Bash/WSL 필요. Bun + Node.js 모두 PATH에 있어야 함
+
+**CLAUDE.md에 추가:**
 ```
 ## gstack
 Use /browse from gstack for all web browsing. Never use mcp__claude-in-chrome__* tools.
@@ -267,69 +300,39 @@ Available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-desig
 /design-consultation, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse,
 /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro,
 /investigate, /document-release, /codex, /cso, /autoplan, /careful, /freeze, /guard,
-/unfreeze, /gstack-upgrade.
+/unfreeze, /gstack-upgrade, /pdca, /pipeline, /pm-discovery, /dev-all.
 ```
-
-## License
-
-MIT. Free forever. Go build something.
 
 ---
 
-## gstack-me: PDCA Integration
+## 문서
 
-This fork extends gstack with **PDCA methodology** (Plan→Design→Do→Check→Act), **specialized AI agents**, and a **9-phase development pipeline** — integrated from the bkit vibecoding framework.
+| 문서 | 내용 |
+|------|------|
+| [스킬 심화](docs/skills.md) | 모든 스킬의 철학, 예시, 워크플로우 |
+| [빌더 철학](ETHOS.md) | Boil the Lake, Search Before Building |
+| [아키텍처](ARCHITECTURE.md) | 시스템 내부 설계 |
+| [브라우저 레퍼런스](BROWSER.md) | `/browse` 전체 명령어 |
+| [에이전트 가이드](AGENTS.md) | 전체 스킬 + 에이전트 맵 |
+| [기여 가이드](CONTRIBUTING.md) | 개발 환경, 테스트 |
+| [변경 이력](CHANGELOG.md) | 버전별 변경사항 |
 
-### What's New
+---
 
-**3 new skills:**
-- `/pdca` — Unified PDCA cycle management with automatic phase progression
-- `/pipeline` — 9-phase development pipeline (schema → convention → mockup → API → design system → UI → security → review → deployment)
-- `/pm-discovery` — Product management agent team for discovery & PRD generation
+## 프라이버시 & 텔레메트리
 
-**14 agents** for automated quality enforcement:
-- `gap-detector` — compares design docs vs code, calculates match rate
-- `code-analyzer` — scores code quality across 6 dimensions
-- `pdca-iterator` — auto-fixes design-implementation gaps (max 5 iterations)
-- `report-generator` — creates structured completion reports
-- `cto-lead` — orchestrates the team through PDCA phases
-- Plus: product-manager, frontend-architect, security-architect, enterprise-expert, infra-architect, design-validator, qa-strategist, pm-lead, starter-guide
+- **기본값: 꺼짐.** 명시적 동의 없이 아무것도 전송하지 않음
+- **전송 내용 (동의 시):** 스킬명, 소요 시간, 성공/실패, 버전, OS
+- **전송 안 함:** 코드, 파일 경로, 레포명, 프롬프트, 사용자 콘텐츠
+- **변경:** `gstack-config set telemetry off`
 
-**8 enhanced skills** with bkit integration sections:
-- `/review` — + code quality scoring + design gap check
-- `/qa` + `/qa-only` — + structured log analysis (Zero Script QA)
-- `/cso` — + SEO audit + security architecture review
-- `/ship` + `/land-and-deploy` — + level-based deployment (Starter/Dynamic/Enterprise)
-- `/autoplan` — + PDCA planning + PM team integration
-- `/design-consultation` + `/design-review` — + mockup pipeline + spec validation
-- `/document-release` — + PDCA completion reports
-- `/investigate` — + design-gap awareness
+---
 
-### The PDCA Cycle
+## 크레딧
 
-```
-PM Discovery → Plan (3-review) → Design → Do → Check (gap analysis) → Act (iterate) → Report
-                                                  │                        ↑
-                                                  └── if match rate < 90% ─┘
-```
+- [gstack](https://github.com/garrytan/gstack) by [Garry Tan](https://x.com/garrytan) (YC President) &mdash; MIT License
+- [bkit](https://github.com/popup-studio-ai/bkit-claude-code) by POPUP STUDIO &mdash; PDCA 방법론, 에이전트 시스템 &mdash; Apache-2.0
 
-### Quick Start (PDCA)
+## 라이선스
 
-1. `/pdca plan my-feature` — create a structured plan document
-2. `/pdca design my-feature` — write API contracts, data models, component specs
-3. Build the feature
-4. `/pdca analyze my-feature` — compare code vs design (gap analysis)
-5. `/pdca iterate my-feature` — auto-fix gaps until 90%+ match rate
-6. `/pdca report my-feature` — generate completion report
-
-### Templates
-
-PDCA document templates in `templates/pdca/`:
-- `plan.template.md` — Plan document structure
-- `design.template.md` — Design specification structure
-- `analysis.template.md` — Gap analysis report structure
-- `report.template.md` — Completion report structure
-
-Shared patterns in `templates/shared/`:
-- `naming-conventions.md` — File, variable, database, API naming
-- `error-handling-patterns.md` — Error responses, status codes, validation
+MIT. 자유롭게 사용하세요.
